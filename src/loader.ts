@@ -57,17 +57,7 @@ export class R2ContentLoader {
   }
 
   async getObject(path: string): Promise<R2Object | null> {
-    const cacheKey = `obj:${this.getKey(path)}`;
-    
-    const cached = this.cache.get<R2Object>(cacheKey);
-    if (cached !== null) {
-      return cached;
-    }
-
     const obj = await this.bucket.get(this.getKey(path));
-    if (obj) {
-      this.cache.set(cacheKey, obj);
-    }
     return obj;
   }
 
