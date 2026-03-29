@@ -1,0 +1,44 @@
+{
+  "name": "@leadertechie/r2tohtml",
+  "version": "0.0.0",
+  "description": "Generic R2 content loader - fetch and cache content from Cloudflare R2",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@leadertechie/md2html": "^0.1.0-alpha.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "keywords": [
+    "r2",
+    "cloudflare",
+    "content",
+    "loader",
+    "cache"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leadertechie/r2Tohtml.git"
+  }
+}
