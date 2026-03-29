@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@leadertechie/md2html": "0.1.0-alpha.4"
+    "@leadertechie/md2html": "0.1.0-alpha.9"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
