@@ -27,6 +27,9 @@
     "vite": "^5.4.21",
     "vitest": "^2.0.0"
   },
+  "peerDependencies": {
+    "@leadertechie/md2html": "^0.1.0-alpha.9"
+  },
   "keywords": [
     "r2",
     "cloudflare",
