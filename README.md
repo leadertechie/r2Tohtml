@@ -12,8 +12,10 @@ A generic, configuration-driven R2 content loader for Cloudflare Workers. Fetch,
 ## Installation
 
 ```bash
-npm install @leadertechie/r2tohtml
+npm install @leadertechie/r2tohtml @leadertechie/md2html
 ```
+
+> Note: `@leadertechie/md2html` is a peer dependency and must be installed alongside r2tohtml.
 
 ## Usage
 
