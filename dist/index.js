@@ -111,15 +111,7 @@ class R2ContentLoader {
     return content;
   }
   async getObject(path) {
-    const cacheKey = `obj:${this.getKey(path)}`;
-    const cached = this.cache.get(cacheKey);
-    if (cached !== null) {
-      return cached;
-    }
     const obj = await this.bucket.get(this.getKey(path));
-    if (obj) {
-      this.cache.set(cacheKey, obj);
-    }
     return obj;
   }
   async getWithMetadata(path) {
