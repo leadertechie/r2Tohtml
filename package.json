@@ -17,10 +17,12 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.6"
+    "@leadertechie/md2html": "^0.1.0-alpha.7"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "jsdom": "^29.0.1",
+    "lit": "^3.3.2",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
   },
