@@ -18,7 +18,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.13",
+    "@leadertechie/md2html": "^0.1.0-alpha.15",
     "@types/node": "^20.0.0",
     "jsdom": "^29.0.1",
     "lit": "^3.3.2",
@@ -27,7 +27,7 @@
     "vitest": "^4.1.3"
   },
   "peerDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.13"
+    "@leadertechie/md2html": "^0.1.0-alpha.15"
   },
   "keywords": [
     "r2",
