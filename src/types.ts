@@ -37,6 +37,21 @@ export interface R2LoaderConfig {
   cacheEnabled?: boolean;
 }
 
+export interface ShardConfig {
+  shards: R2Bucket[];
+  vnodesPerShard: number;
+  systemBucket?: R2Bucket;
+}
+
+export interface R2LoaderConfigV2 extends R2LoaderConfig {
+  cfCache?: boolean;
+  cfCacheTTL?: number;
+  swrTTL?: number;
+  systemBucket?: R2Bucket;
+  systemPrefix?: string;
+  shardConfig?: ShardConfig;
+}
+
 export interface ContentMetadata {
   [key: string]: string | string[] | undefined;
   title?: string;
@@ -49,4 +64,15 @@ export interface ContentMetadata {
 export interface ParsedContent {
   metadata: ContentMetadata;
   content: string;
+}
+
+export interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+export interface SWRCacheEntry<T> {
+  data: T;
+  timestamp: number;
+  staleTimestamp: number;
 }
