@@ -10,4 +10,5 @@ export * from './cache-registry';
 export * from './cache-strategy';
 export * from './content-processor';
 export { MarkdownPipeline } from '@leadertechie/md2html';
-export type { ContentNode, PipelineConfig } from '@leadertechie/md2html';
+export type { ContentNode, PipelineConfigV2 } from '@leadertechie/md2html';
+

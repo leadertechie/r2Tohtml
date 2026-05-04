@@ -27,11 +27,12 @@ import {
 } from './content-processor';
 import { ExecutionContext } from './execution-context';
 import { MarkdownPipeline } from '@leadertechie/md2html';
-import type { PipelineConfig } from '@leadertechie/md2html';
+import type { PipelineConfigV2 } from '@leadertechie/md2html';
 
 export interface R2LoaderOptions {
-  md2html?: PipelineConfig;
+  md2html?: PipelineConfigV2;
 }
+
 
 export class R2ContentLoader {
   private prefix: string;
