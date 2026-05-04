@@ -27,10 +27,10 @@ import {
 } from './content-processor';
 import { ExecutionContext } from './execution-context';
 import { MarkdownPipeline } from '@leadertechie/md2html';
-import type { PipelineConfigV2 } from '@leadertechie/md2html';
+import type { PipelineConfig, PipelineConfigV2 } from '@leadertechie/md2html';
 
 export interface R2LoaderOptions {
-  md2html?: PipelineConfigV2;
+  md2html?: PipelineConfig | PipelineConfigV2;
 }
 
 
@@ -48,7 +48,7 @@ export class R2ContentLoader {
   private _astProcessor?: ContentProcessor<ASTContent>;
   private _renderedProcessor?: ContentProcessor<RenderedContent>;
 
-  constructor(config: R2LoaderConfig, options?: R2LoaderOptions) {
+  constructor(config: R2LoaderConfig | R2LoaderConfigV2, options?: R2LoaderOptions) {
     this.prefix = config.prefix || '';
     this.cache = new ContentCache(
       config.cacheTTL || 5 * 60 * 1000,
