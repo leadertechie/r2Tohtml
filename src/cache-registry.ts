@@ -1,4 +1,4 @@
-import { ContentCache, ContentCacheV2 } from './cache';
+import { CacheStore } from './cache';
 
 /**
  * CacheRegistry — Plugin pattern for cache invalidation.
@@ -11,7 +11,7 @@ import { ContentCache, ContentCacheV2 } from './cache';
 export class CacheRegistry {
   private prefixes = new Set<string>();
 
-  constructor(private cache: ContentCache | ContentCacheV2) {}
+  constructor(private cache: CacheStore) {}
 
   /** Register a cache key prefix (e.g. 'meta:', 'ast:', 'rendered:'). */
   register(prefix: string): void {

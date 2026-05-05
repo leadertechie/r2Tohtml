@@ -1,6 +1,15 @@
 import { CacheEntry, SWRCacheEntry } from './types';
 
-export class ContentCache {
+/**
+ * CacheStore — minimal interface for cache operations.
+ * Used by CacheRegistry to decouple from concrete cache classes.
+ */
+export interface CacheStore {
+  delete(key: string): void;
+  clear(): void;
+}
+
+export class ContentCache implements CacheStore {
   protected cache: Map<string, CacheEntry<unknown>>;
   protected ttl: number;
   protected enabled: boolean;
@@ -70,7 +79,7 @@ export class ContentCache {
  * Does NOT extend ContentCache because the return type of get() differs
  * (returns { data, stale } | null instead of T | null).
  */
-export class ContentCacheV2 {
+export class ContentCacheV2 implements CacheStore {
   private cache: Map<string, SWRCacheEntry<unknown>>;
   private ttl: number;
   private enabled: boolean;

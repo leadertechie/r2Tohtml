@@ -36,8 +36,8 @@ describe('CacheChain', () => {
     const chain = new CacheChain([s1, s2]);
     await chain.set('key', 'value');
 
-    expect(s1.set).toHaveBeenCalledWith('key', 'value');
-    expect(s2.set).toHaveBeenCalledWith('key', 'value');
+    expect(s1.set).toHaveBeenCalledWith('key', 'value', undefined);
+    expect(s2.set).toHaveBeenCalledWith('key', 'value', undefined);
   });
 
   it('should delete from all strategies', async () => {
@@ -47,8 +47,8 @@ describe('CacheChain', () => {
     const chain = new CacheChain([s1, s2]);
     await chain.delete('key');
 
-    expect(s1.delete).toHaveBeenCalledWith('key');
-    expect(s2.delete).toHaveBeenCalledWith('key');
+    expect(s1.delete).toHaveBeenCalledWith('key', undefined);
+    expect(s2.delete).toHaveBeenCalledWith('key', undefined);
   });
 });
 

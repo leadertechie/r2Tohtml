@@ -76,3 +76,14 @@ export interface SWRCacheEntry<T> {
   timestamp: number;
   staleTimestamp: number;
 }
+
+/**
+ * Logger — injectable logger interface.
+ * In CF Workers, use `console` or a structured logger (e.g., from `@cloudflare/workers-types`).
+ * Not needed in Worker runtime (console exists), but useful for testability.
+ */
+export interface Logger {
+  warn(message: string, ...args: unknown[]): void;
+  error(message: string, ...args: unknown[]): void;
+  info(message: string, ...args: unknown[]): void;
+}
