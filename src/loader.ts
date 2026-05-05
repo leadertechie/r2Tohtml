@@ -33,6 +33,7 @@ export interface R2LoaderOptions {
   md2html?: PipelineConfig | PipelineConfigV2;
 }
 
+
 export class R2ContentLoader {
   private prefix: string;
   private cache: ContentCache;
