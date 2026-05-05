@@ -76,7 +76,8 @@ describe('stringifyFrontmatter', () => {
     const metadata = { tags: ['tag1', 'tag2'] };
     const result = stringifyFrontmatter(metadata);
 
-    expect(result).toContain('[tag1, tag2]');
+    expect(result).toContain('  - tag1');
+    expect(result).toContain('  - tag2');
   });
 
   it('should omit undefined values', () => {

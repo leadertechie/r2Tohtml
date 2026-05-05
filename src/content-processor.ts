@@ -6,15 +6,10 @@ import { MarkdownPipeline } from '@leadertechie/md2html';
 import type { ContentNode } from '@leadertechie/md2html';
 
 /**
- * ContentProcessor — Decorator pattern.
+ * ContentProcessor — Decorator pattern for content transformation.
  *
- * Wraps a raw content fetcher with transformation + caching.
- * Eliminates repetitive getWithMetadata / getWithAST / getRendered methods.
- *
- * Usage:
- *   const getRendered = new ContentProcessor(loader, cache, registry, 'rendered',
- *     (raw) => { ... transform raw to desired type ... });
- *   const html = await getRendered.get('path');
+ * Composes transformations: raw content → intermediate ParsedContent → final type.
+ * No JSON serialization hack — uses proper function composition.
  */
 
 export interface RenderedContent {
@@ -29,6 +24,13 @@ export interface ASTContent {
 
 export type ContentFetcher = (path: string) => Promise<string | null>;
 
+/** A transform that produces output from raw content. */
+export type ContentTransform<T> = (raw: string) => T;
+
+/**
+ * ContentProcessor — single-stage processor.
+ * Fetcher → Transform → Cache.
+ */
 export class ContentProcessor<T> {
   private cacheKeyPrefix: string;
 
@@ -37,7 +39,7 @@ export class ContentProcessor<T> {
     private cache: ContentCache,
     registry: CacheRegistry,
     prefix: string,
-    private transform: (raw: string) => T,
+    private transform: ContentTransform<T>,
   ) {
     this.cacheKeyPrefix = prefix;
     registry.register(prefix);
@@ -53,6 +55,43 @@ export class ContentProcessor<T> {
     if (raw === null) return null;
 
     const result = this.transform(raw);
+    this.cache.set(cacheKey, result);
+    return result;
+  }
+}
+
+/**
+ * TwoStageProcessor — composes two ContentProcessors.
+ * Stage 1: raw → ParsedContent (metadata + body)
+ * Stage 2: ParsedContent → final T (AST or rendered HTML)
+ *
+ * Eliminates JSON.stringify/parse pipe between stages.
+ */
+export class TwoStageProcessor<T> {
+  private cacheKeyPrefix: string;
+
+  constructor(
+    private stage1: ContentProcessor<ParsedContent>,
+    private cache: ContentCache,
+    registry: CacheRegistry,
+    prefix: string,
+    private transform: (parsed: ParsedContent) => T,
+  ) {
+    this.cacheKeyPrefix = prefix;
+    registry.register(prefix);
+  }
+
+  async get(path: string): Promise<T | null> {
+    const cacheKey = `${this.cacheKeyPrefix}:${path}`;
+
+    const cached = this.cache.get<T>(cacheKey);
+    if (cached !== null) return cached;
+
+    // Call stage1 — uses its own caching internally
+    const parsed = await this.stage1.get(path);
+    if (parsed === null) return null;
+
+    const result = this.transform(parsed);
     this.cache.set(cacheKey, result);
     return result;
   }
@@ -76,22 +115,15 @@ export function createASTProcessor(
   cache: ContentCache,
   registry: CacheRegistry,
   pipeline: MarkdownPipeline,
-): ContentProcessor<ASTContent> {
-  // We need a two-stage processor: first parse frontmatter, then parse AST.
-  // Use the metadata processor internally.
+): TwoStageProcessor<ASTContent> {
   const metaProcessor = createMetadataProcessor(fetcher, cache, registry);
 
-  return new ContentProcessor<ASTContent>(
-    // The fetcher for AST is actually getWithMetadata
-    async (path: string) => {
-      const parsed = await metaProcessor.get(path);
-      return parsed ? JSON.stringify(parsed) : null;
-    },
+  return new TwoStageProcessor<ASTContent>(
+    metaProcessor,
     cache,
     registry,
     'ast',
-    (raw) => {
-      const parsed: ParsedContent = JSON.parse(raw);
+    (parsed) => {
       const contentNodes = pipeline.parse(parsed.content);
       return { metadata: parsed.metadata, contentNodes };
     },
@@ -103,19 +135,15 @@ export function createRenderedProcessor(
   cache: ContentCache,
   registry: CacheRegistry,
   pipeline: MarkdownPipeline,
-): ContentProcessor<RenderedContent> {
+): TwoStageProcessor<RenderedContent> {
   const metaProcessor = createMetadataProcessor(fetcher, cache, registry);
 
-  return new ContentProcessor<RenderedContent>(
-    async (path: string) => {
-      const parsed = await metaProcessor.get(path);
-      return parsed ? JSON.stringify(parsed) : null;
-    },
+  return new TwoStageProcessor<RenderedContent>(
+    metaProcessor,
     cache,
     registry,
     'rendered',
-    (raw) => {
-      const parsed: ParsedContent = JSON.parse(raw);
+    (parsed) => {
       const html = pipeline.renderMarkdown(parsed.content);
       return { metadata: parsed.metadata, content: html };
     },
