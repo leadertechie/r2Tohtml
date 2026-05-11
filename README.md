@@ -85,6 +85,25 @@ r2tohtml uses a **layered architecture** with clear separation of concerns:
 | **Decorator** | `content-processor.ts` | Wraps raw fetcher with transform + cache |
 | **Plugin** | `cache-registry.ts` | Auto-registers cache key prefixes for invalidation |
 
+### Logger / Telemetry
+
+All `@leadertechie` packages use a shared telemetry pattern via `@leadertechie/telemetry`. 
+
+- Each package has a `telemetry-init.ts` that provides a `getDefaultLogger(serviceName)` function
+- The default logger is a lazily-created `LoggerProvider` with a console adapter at `WARN` level — silent during normal operation, noisy when something's wrong
+- Consumers can inject their own `LoggerInterface` (e.g., a production fetch adapter pointing to `toldby-telemetry-worker`) via `config.logger` or `options.logger`
+- The fallback follows the `??` pattern: `logger = opts?.logger ?? getDefaultLogger('r2tohtml')` — same as `@leadertechie/md2html`
+
+```typescript
+import { R2ContentLoader } from '@leadertechie/r2tohtml';
+
+// Custom production logger
+const loader = new R2ContentLoader(
+  { bucket: MY_BUCKET },
+  { logger: myProductionLogger },
+);
+```
+
 ---
 
 ## API Reference
@@ -105,6 +124,7 @@ new R2ContentLoader(config: R2LoaderConfig, options?: R2LoaderOptions)
 | `prefix` | `string` | `''` | Key prefix for all operations |
 | `cacheTTL` | `number` | `300000` | In-memory cache TTL (ms) |
 | `cacheEnabled` | `boolean` | `true` | Enable/disable in-memory cache |
+| `logger` | `LoggerInterface` | `undefined` | Optional telemetry logger. Falls back to a shared console logger (`WARN+` only) via `@leadertechie/telemetry` |
 
 **`R2LoaderConfigV2` (v2 — opt-in via new fields)**
 
@@ -128,7 +148,8 @@ new R2ContentLoader(config: R2LoaderConfig, options?: R2LoaderOptions)
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `md2html` | `PipelineConfig` | `undefined` | Configuration for the markdown-to-HTML pipeline |
+| `md2html` | `PipelineConfig \| PipelineConfigV2` | `undefined` | Configuration for the markdown-to-HTML pipeline |
+| `logger` | `LoggerInterface` | `undefined` | Optional injectable logger. In CF Workers pass `console` or your structured logger. Falls back to a shared console logger (`WARN+` only) via `@leadertechie/telemetry` |
 
 #### Methods
 

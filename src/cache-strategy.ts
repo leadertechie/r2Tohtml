@@ -1,12 +1,13 @@
 import { ContentCache } from './cache';
 import { ExecutionContext } from './execution-context';
-import { Logger } from './types';
 import {
   buildCFCacheKey,
   cfCacheMatch,
   cfCachePut,
   cfCacheDelete,
 } from './cf-cache';
+import { getDefaultLogger } from './telemetry-init.js';
+import type { LoggerInterface as Logger } from '@leadertechie/telemetry';
 
 /**
  * CacheStrategy — Strategy pattern for cache tiers.
@@ -94,13 +95,6 @@ export class CFCacheStrategy implements CacheStrategy {
   }
 }
 
-/** No-op logger — used when no logger injected. */
-const noopLogger: Logger = {
-  warn: () => {},
-  error: () => {},
-  info: () => {},
-};
-
 // ─── Cache Chain ──────────────────────────────────────────────────
 
 /**
@@ -108,14 +102,14 @@ const noopLogger: Logger = {
  * First strategy to return a hit wins.
  * On miss, all strategies are populated on write-back.
  *
- * @param logger Optional injectable logger. Defaults to no-op.
- *               In CF Workers, pass `console` or your structured logger.
+ * If no logger is provided, falls back to a default console logger (WARN+ only)
+ * via the shared telemetry helper — same pattern used across all @leadertechie packages.
  */
 export class CacheChain {
   private log: Logger;
 
   constructor(private strategies: CacheStrategy[], logger?: Logger) {
-    this.log = logger || noopLogger;
+    this.log = logger ?? getDefaultLogger('r2tohtml');
   }
 
   /** Try each strategy in order. Returns first hit. */
@@ -126,8 +120,8 @@ export class CacheChain {
         if (result !== null) {
           return result.data;
         }
-      } catch (err) {
-        this.log.warn(`[CacheChain] ${strategy.name}.get() failed:`, err);
+      } catch (err: unknown) {
+        this.log.warn(`[CacheChain] ${strategy.name}.get() failed:`, err as Record<string, unknown>);
       }
     }
     return null;
@@ -138,7 +132,7 @@ export class CacheChain {
     await Promise.all(
       this.strategies.map(s =>
         s.set(key, data, opts).catch((err: unknown) => {
-          this.log.warn(`[CacheChain] ${s.name}.set() failed:`, err);
+          this.log.warn(`[CacheChain] ${s.name}.set() failed:`, err as Record<string, unknown>);
         }),
       ),
     );
@@ -149,7 +143,7 @@ export class CacheChain {
     await Promise.all(
       this.strategies.map(s =>
         s.delete(key, opts).catch((err: unknown) => {
-          this.log.warn(`[CacheChain] ${s.name}.delete() failed:`, err);
+          this.log.warn(`[CacheChain] ${s.name}.delete() failed:`, err as Record<string, unknown>);
         }),
       ),
     );
