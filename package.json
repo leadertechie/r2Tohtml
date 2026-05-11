@@ -1,7 +1,6 @@
 {
   "name": "@leadertechie/r2tohtml",
   "version": "0.0.0",
-
   "description": "Generic R2 content loader - fetch and cache content from Cloudflare R2",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,10 +16,11 @@
     "build": "vite build && tsc --emitDeclarationOnly",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@leadertechie/telemetry": "^0.0.0"
+  },
   "devDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.17",
-
+    "@leadertechie/md2html": "^0.1.0-alpha.19",
     "@types/node": "^20.0.0",
     "jsdom": "^29.0.1",
     "lit": "^3.3.2",
@@ -31,7 +31,6 @@
   "peerDependencies": {
     "@leadertechie/md2html": "^0.1.0-alpha.17"
   },
-
   "keywords": [
     "r2",
     "cloudflare",

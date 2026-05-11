@@ -31,6 +31,8 @@ export interface R2ListObject {
 }
 
 export interface R2LoaderConfig {
+  /** Optional telemetry logger */
+  logger?: import("@leadertechie/telemetry").LoggerInterface;
   bucket: R2Bucket;
   prefix?: string;
   cacheTTL?: number;
@@ -82,8 +84,4 @@ export interface SWRCacheEntry<T> {
  * In CF Workers, use `console` or a structured logger (e.g., from `@cloudflare/workers-types`).
  * Not needed in Worker runtime (console exists), but useful for testability.
  */
-export interface Logger {
-  warn(message: string, ...args: unknown[]): void;
-  error(message: string, ...args: unknown[]): void;
-  info(message: string, ...args: unknown[]): void;
-}
+export type { LoggerInterface as Logger } from "@leadertechie/telemetry";
