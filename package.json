@@ -20,16 +20,16 @@
     "@leadertechie/telemetry": "^0.0.0"
   },
   "devDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.19",
+    "@leadertechie/md2html": "^0.1.0-alpha.22",
     "@types/node": "^20.0.0",
-    "jsdom": "^29.0.1",
+    "jsdom": "^29.1.1",
     "lit": "^3.3.2",
     "typescript": "^5.0.0",
     "vite": "^8.0.5",
     "vitest": "^4.1.3"
   },
   "peerDependencies": {
-    "@leadertechie/md2html": "^0.1.0-alpha.17"
+    "@leadertechie/md2html": "^0.1.0-alpha.22"
   },
   "keywords": [
     "r2",

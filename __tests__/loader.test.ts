@@ -1,4 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
+
+// Mock @leadertechie/md2html before importing loader to avoid
+// loading its bundled jsdom (has Node.js v24 compat issues with undici)
+vi.mock('@leadertechie/md2html', () => {
+  class MarkdownPipeline {
+    parse = vi.fn((content: string) => [
+      { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Mocked' }] },
+    ]);
+    renderMarkdown = vi.fn((content: string) => `<h1>${content}</h1>`);
+  }
+  return { MarkdownPipeline };
+});
+
 import { R2ContentLoader } from '../src/loader';
 
 describe('R2ContentLoader', () => {
