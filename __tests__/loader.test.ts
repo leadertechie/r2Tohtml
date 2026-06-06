@@ -1,11 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock @leadertechie/md2html before importing loader to avoid
-// loading its bundled jsdom (has Node.js v24 compat issues with undici)
+// Mock @leadertechie/md2html before importing loader.
+// jsdom is now a peer dependency of md2html — the mock keeps tests isolated.
 vi.mock('@leadertechie/md2html', () => {
   class MarkdownPipeline {
     parse = vi.fn((content: string) => [
-      { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Mocked' }] },
+      {
+        type: 'heading',
+        depth: 1,
+        children: [{ type: 'text', value: 'Mocked' }],
+      },
     ]);
     renderMarkdown = vi.fn((content: string) => `<h1>${content}</h1>`);
   }
@@ -28,7 +32,7 @@ describe('R2ContentLoader', () => {
         return null;
       }),
       list: vi.fn(async () => ({
-        objects: Object.keys(data).map(key => ({ key })),
+        objects: Object.keys(data).map((key) => ({ key })),
         truncated: false,
       })),
     };
@@ -55,7 +59,10 @@ describe('R2ContentLoader', () => {
 
     it('should use cache', async () => {
       const mockBucket = createMockBucket({ 'test.md': 'content' });
-      const loader = new R2ContentLoader({ bucket: mockBucket as any, cacheTTL: 60000 });
+      const loader = new R2ContentLoader({
+        bucket: mockBucket as any,
+        cacheTTL: 60000,
+      });
 
       await loader.get('test.md');
       await loader.get('test.md');
@@ -65,7 +72,10 @@ describe('R2ContentLoader', () => {
 
     it('should respect prefix', async () => {
       const mockBucket = createMockBucket({ 'content/test.md': 'hello' });
-      const loader = new R2ContentLoader({ bucket: mockBucket as any, prefix: 'content/' });
+      const loader = new R2ContentLoader({
+        bucket: mockBucket as any,
+        prefix: 'content/',
+      });
 
       const result = await loader.get('test.md');
 
@@ -130,12 +140,16 @@ title: Rendered Post
         get: vi.fn(),
         list: vi.fn(async (options: { prefix?: string }) => {
           const prefix = options?.prefix || '';
-          const allKeys = ['blogs/post1.md', 'blogs/post2.md', 'stories/post1.md'];
+          const allKeys = [
+            'blogs/post1.md',
+            'blogs/post2.md',
+            'stories/post1.md',
+          ];
           const filtered = prefix
-            ? allKeys.filter(k => k.startsWith(prefix))
+            ? allKeys.filter((k) => k.startsWith(prefix))
             : allKeys;
           return {
-            objects: filtered.map(key => ({ key })),
+            objects: filtered.map((key) => ({ key })),
             truncated: false,
           };
         }),
@@ -171,7 +185,10 @@ title: Rendered Post
   describe('cache invalidation', () => {
     it('should invalidate specific path', async () => {
       const mockBucket = createMockBucket({ 'test.md': 'content' });
-      const loader = new R2ContentLoader({ bucket: mockBucket as any, cacheTTL: 60000 });
+      const loader = new R2ContentLoader({
+        bucket: mockBucket as any,
+        cacheTTL: 60000,
+      });
 
       await loader.get('test.md');
       loader.invalidate('test.md');
@@ -182,7 +199,10 @@ title: Rendered Post
 
     it('should clear all cache', async () => {
       const mockBucket = createMockBucket({ 'a.md': 'a', 'b.md': 'b' });
-      const loader = new R2ContentLoader({ bucket: mockBucket as any, cacheTTL: 60000 });
+      const loader = new R2ContentLoader({
+        bucket: mockBucket as any,
+        cacheTTL: 60000,
+      });
 
       await loader.get('a.md');
       await loader.get('b.md');
